@@ -1,0 +1,757 @@
+@if (screen() === 'loading') {
+  <section class="preloader-screen" aria-label="Loading website">
+    <div class="preloader-glow preloader-glow-left"></div>
+    <div class="preloader-glow preloader-glow-right"></div>
+
+    <div class="preloader-card">
+      <div class="loom-loader" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <img class="preloader-logo" src="assets/logo.png" alt="M S Enterprises logo" />
+      <p class="eyebrow">Preparing the catalog</p>
+      <h1 class="brand-title">M S ENTERPRISES</h1>
+      <p class="brand-note preloader-caption">Handloom &amp; powerloom yarn traders</p>
+
+      <div class="preloader-bar" aria-hidden="true">
+        <span></span>
+      </div>
+    </div>
+  </section>
+} @else if (screen() === 'entry') {
+  <section class="access-page">
+    <div class="access-panel">
+      <div class="access-copy">
+        <div class="access-brand">
+          <img src="assets/logo.png" alt="M S Enterprises logo" />
+          <div class="brand-stack">
+            <h1 class="brand-title access-brand-title">M S ENTERPRISES</h1>
+            <p class="brand-note">Handloom &amp; powerloom yarn traders</p>
+          </div>
+        </div>
+
+        <h2 class="access-title">
+          Trusted yarn sourcing for handloom, powerloom, furnishing, and textile buyers across India.
+        </h2>
+        <p class="access-text">
+          Explore the M.S. Enterprises catalog with clearer product reading, dependable inquiry support,
+          and sourcing confidence for regular business requirements.
+        </p>
+
+        <div class="access-highlights">
+          @for (highlight of accessHighlights; track highlight.title) {
+            <article class="access-highlight-card">
+              <h3>{{ highlight.title }}</h3>
+              <p>{{ highlight.text }}</p>
+            </article>
+          }
+        </div>
+      </div>
+
+      <div class="login-card">
+        <p class="section-kicker">Access</p>
+        <h2>Login to manage the product catalog.</h2>
+        <p class="login-copy">
+          Choose visitor mode to browse the website, or use your admin email and password to manage
+          products, prices, and admin access.
+        </p>
+
+        @if (loginError()) {
+          <p class="form-error">{{ loginError() }}</p>
+        }
+
+        <form class="login-form" (ngSubmit)="loginAsAdmin()">
+          <label>
+            <span>Admin email</span>
+            <input
+              [(ngModel)]="loginForm.email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="Enter admin email"
+            />
+          </label>
+
+          <label>
+            <span>Password</span>
+            <input
+              [(ngModel)]="loginForm.password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Enter password"
+            />
+          </label>
+
+          <button type="submit" class="button primary full-width">Login as Admin</button>
+        </form>
+
+        <p class="login-hint">
+          <strong>{{ adminCredentialsHint }}</strong> and the first admin login on this device will
+          be saved for future use.
+        </p>
+
+        <div class="access-divider">
+          <span>or</span>
+        </div>
+
+        <button type="button" class="button secondary full-width" (click)="continueAsVisitor()">
+          Continue as Visitor
+        </button>
+      </div>
+    </div>
+  </section>
+} @else if (activeView() === 'website') {
+  <div class="shell">
+    <header class="topbar" [class.admin-topbar]="isAdmin()">
+      <a class="brand-lockup" href="#home" aria-label="M S Enterprises home">
+        <img src="assets/logo.png" alt="M S Enterprises logo" />
+        <div class="brand-stack">
+          <h1 class="brand-title">M S ENTERPRISES</h1>
+          <p class="brand-note">Handloom &amp; powerloom yarn traders</p>
+        </div>
+      </a>
+
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="#catalog">Products</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      @if (isAdmin()) {
+        <div class="topbar-actions">
+          <button type="button" class="button secondary topbar-button" (click)="openAdminPage()">
+            Admin Panel
+          </button>
+          <button type="button" class="button secondary topbar-button" (click)="logout()">
+            Logout
+          </button>
+        </div>
+      }
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="hero-copy">
+          <p class="eyebrow">Premium yarn catalog</p>
+          <h2>Browse products, open details instantly, and connect directly for pricing.</h2>
+          <p class="hero-text">
+            Discover PTY, cotton, blend, rope, carpet, and specialty yarns through a cleaner catalog
+            experience designed for quick review and direct business inquiry.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button primary" href="#catalog">Explore Products</a>
+            <a class="button secondary" href="#contact">Contact Us</a>
+          </div>
+
+          <div class="hero-tags">
+            @for (tag of heroTags; track tag) {
+              <span>{{ tag }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="hero-panel">
+          <div class="stats-card">
+            <p class="panel-kicker">Catalog dashboard</p>
+            <div class="stats-grid">
+              @for (stat of dashboardStats(); track stat.label) {
+                <article class="stat-block">
+                  <strong>{{ stat.value }}</strong>
+                  <span>{{ stat.label }}</span>
+                </article>
+              }
+            </div>
+          </div>
+
+          @if (selectedProduct(); as product) {
+            <div class="spotlight-card">
+              <p class="panel-kicker">Spotlight product</p>
+              <div class="spotlight-media">
+                <img [src]="product.image" [alt]="product.name" />
+              </div>
+              <div class="spotlight-copy">
+                <span class="spotlight-category">{{ product.category }}</span>
+                <h3>{{ product.name }}</h3>
+                @if (isContactPrice(product)) {
+                  <button
+                    type="button"
+                    class="price-trigger spotlight-price"
+                    (click)="openContactOptions(product, $event)"
+                  >
+                    {{ priceDisplay(product) }}
+                  </button>
+                } @else {
+                  <p class="spotlight-price">{{ priceDisplay(product) }}</p>
+                }
+                <p>{{ product.headline }}</p>
+                <div class="spotlight-applications">
+                  @for (application of product.applications; track application) {
+                    <span>{{ application }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      @if (feedbackMessage()) {
+        <section class="notice-strip" aria-live="polite">
+          <p>{{ feedbackMessage() }}</p>
+        </section>
+      }
+
+      <section class="catalog-section" id="catalog">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Product explorer</p>
+            <h2>Click any card to read full product information instantly.</h2>
+            <p>
+              Every item now has a dedicated price line, cleaner information layout, and a more
+              stable responsive card design.
+            </p>
+          </div>
+
+          <div class="catalog-tools">
+            <label class="search-field">
+              <span>Search catalog</span>
+              <input
+                type="search"
+                name="search"
+                placeholder="Search by product, category, or application"
+                [ngModel]="searchTerm()"
+                (ngModelChange)="searchTerm.set($event)"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="chip-row" aria-label="Product categories">
+          @for (category of categories(); track category) {
+            <button
+              type="button"
+              class="chip"
+              [class.active]="activeCategory() === category"
+              (click)="selectCategory(category)"
+            >
+              {{ category }}
+            </button>
+          }
+        </div>
+
+        <div class="catalog-layout">
+          <div class="product-grid">
+            @for (product of filteredProducts(); track product.id) {
+              <article
+                class="product-card"
+                [class.selected]="isSelected(product.id)"
+                (click)="selectProduct(product.id)"
+              >
+                <div class="product-media">
+                  <img [src]="product.image" [alt]="product.name" />
+                </div>
+
+                <div class="product-content">
+                  <div class="product-header">
+                    <span>{{ product.category }}</span>
+                  </div>
+
+                  <h3>{{ product.name }}</h3>
+                  @if (isContactPrice(product)) {
+                    <button
+                      type="button"
+                      class="price-trigger product-price"
+                      (click)="openContactOptions(product, $event)"
+                    >
+                      {{ priceDisplay(product) }}
+                    </button>
+                  } @else {
+                    <p class="product-price">{{ priceDisplay(product) }}</p>
+                  }
+                  <p class="product-headline">{{ product.headline }}</p>
+
+                  <div class="product-metrics">
+                    @for (metric of product.metrics; track metric.label) {
+                      <div>
+                        <span>{{ metric.label }}</span>
+                        <strong>{{ metric.value }}</strong>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="product-actions">
+                    <button type="button" class="button-link" (click)="selectProduct(product.id)">
+                      Read Profile
+                    </button>
+                  </div>
+                </div>
+              </article>
+            } @empty {
+              <article class="empty-state">
+                <h3>No products found</h3>
+                <p>Try another search term or switch the selected category to see more products.</p>
+              </article>
+            }
+          </div>
+
+          <aside class="detail-panel">
+            @if (selectedProduct(); as product) {
+              <div class="detail-shell">
+                <div class="detail-media">
+                  <img [src]="product.image" [alt]="product.name" />
+                </div>
+
+                <div class="detail-copy">
+                  <p class="section-kicker">Read product profile</p>
+                  <h3>{{ product.name }}</h3>
+                  <p class="detail-category">{{ product.category }}</p>
+                  @if (isContactPrice(product)) {
+                    <button
+                      type="button"
+                      class="price-trigger detail-price"
+                      (click)="openContactOptions(product, $event)"
+                    >
+                      {{ priceDisplay(product) }}
+                    </button>
+                  } @else {
+                    <p class="detail-price">{{ priceDisplay(product) }}</p>
+                  }
+                  <p class="detail-description">{{ product.description }}</p>
+
+                  <div class="detail-metrics">
+                    @for (metric of product.metrics; track metric.label) {
+                      <div>
+                        <span>{{ metric.label }}</span>
+                        <strong>{{ metric.value }}</strong>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="detail-applications">
+                    <p>Applications</p>
+                    <div>
+                      @for (application of product.applications; track application) {
+                        <span>{{ application }}</span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="detail-actions">
+                    @if (isAdmin()) {
+                      <button type="button" class="button primary" (click)="openAdminPage()">
+                        Open Admin Panel
+                      </button>
+                    } @else {
+                      <button type="button" class="button primary" (click)="openContactOptions(product)">
+                        Contact for Pricing
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="empty-detail">
+                <h3>Select a product</h3>
+                <p>The detail view will show product information here.</p>
+              </div>
+            }
+          </aside>
+        </div>
+      </section>
+
+      <section class="about-section" id="about">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">About the business</p>
+            <h2>Operational strength still stays at the center of the brand story.</h2>
+            <p>
+              M.S. Enterprises represents sourcing depth across polyester textured yarns, filament
+              yarn, POY, carpet yarn, cotton yarn, blended yarn, and other requirement-based
+              categories for buyers across India.
+            </p>
+          </div>
+        </div>
+
+        <div class="operations-grid">
+          @for (operation of operations; track operation.title) {
+            <article class="operation-card">
+              <h3>{{ operation.title }}</h3>
+              <p>{{ operation.text }}</p>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="contact-section" id="contact">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Contact</p>
+            <h2>Keep inquiry routes simple and visible.</h2>
+            <p>Customers can move from browsing products to contacting the business in one scroll.</p>
+          </div>
+        </div>
+
+        <div class="contact-grid">
+          @for (card of contactCards; track card.title) {
+            <a class="contact-card" [href]="card.href" target="_blank" rel="noopener">
+              <span>{{ card.title }}</span>
+              <strong>{{ card.value }}</strong>
+              <p>{{ card.note }}</p>
+            </a>
+          }
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Created by Saif Khan. Product website refreshed in {{ currentYear }}.</p>
+    </footer>
+  </div>
+} @else {
+  <div class="admin-shell">
+    <header class="admin-header">
+      <div class="admin-brand">
+        <img src="assets/logo.png" alt="M S Enterprises logo" />
+        <div class="brand-stack">
+          <h1 class="brand-title">M S ENTERPRISES</h1>
+          <p class="brand-note">Admin dashboard</p>
+        </div>
+      </div>
+
+      <div class="admin-header-actions">
+        <button type="button" class="button secondary" (click)="openWebsiteView()">Open Website</button>
+        <button type="button" class="button secondary" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section class="admin-hero">
+        <div class="admin-hero-copy">
+          <p class="section-kicker">Admin control room</p>
+          <h2>Manage products, prices, and admin access from one professional workspace.</h2>
+          <p>
+            Current admin:
+            <strong>{{ currentAdminEmail() || 'Local admin session' }}</strong>
+          </p>
+        </div>
+
+        <div class="admin-stat-grid">
+          @for (stat of adminStats(); track stat.label) {
+            <article class="stat-block">
+              <strong>{{ stat.value }}</strong>
+              <span>{{ stat.label }}</span>
+            </article>
+          }
+        </div>
+      </section>
+
+      @if (feedbackMessage()) {
+        <section class="notice-strip admin-notice" aria-live="polite">
+          <p>{{ feedbackMessage() }}</p>
+        </section>
+      }
+
+      <section class="admin-grid">
+        <article class="admin-card admin-users-card">
+          <div class="admin-card-header">
+            <div>
+              <p class="section-kicker">Admin users</p>
+              <h3>Authorized admin emails</h3>
+            </div>
+          </div>
+
+          <div class="admin-user-list">
+            @for (account of sortedAdminAccounts(); track trackAdminEmail($index, account)) {
+              <article class="admin-user-item">
+                <div>
+                  <strong>{{ account.email }}</strong>
+                  <p>Added by {{ account.addedBy }} on {{ account.createdAt | date: 'mediumDate' }}</p>
+                </div>
+                <span>Last login {{ account.lastLoginAt | date: 'short' }}</span>
+              </article>
+            } @empty {
+              <article class="admin-user-item empty">
+                <p>No admin users added yet.</p>
+              </article>
+            }
+          </div>
+
+          <form class="admin-inline-form" (ngSubmit)="addAdminUser()">
+            <label>
+              <span>New admin email</span>
+              <input
+                [(ngModel)]="newAdminForm.email"
+                name="newAdminEmail"
+                type="email"
+                placeholder="admin@example.com"
+              />
+            </label>
+
+            <label>
+              <span>Password</span>
+              <input
+                [(ngModel)]="newAdminForm.password"
+                name="newAdminPassword"
+                type="password"
+                placeholder="Create password"
+              />
+            </label>
+
+            <button type="submit" class="button primary">Add Admin</button>
+          </form>
+        </article>
+
+        <article class="admin-card admin-products-card">
+          <div class="admin-card-header">
+            <div>
+              <p class="section-kicker">Product control</p>
+              <h3>Select a product to update details and pricing</h3>
+            </div>
+            <button type="button" class="button secondary" (click)="restoreDefaults()">
+              Restore Originals
+            </button>
+          </div>
+
+          <div class="admin-products-layout">
+            <div class="admin-product-list">
+              @for (product of products(); track product.id) {
+                <button
+                  type="button"
+                  class="admin-product-item"
+                  [class.selected]="isAdminProductSelected(product.id)"
+                  (click)="selectAdminProduct(product.id)"
+                >
+                  <img [src]="product.image" [alt]="product.name" />
+                  <div>
+                    <strong>{{ product.name }}</strong>
+                    <span>{{ product.category }}</span>
+                    <p>{{ priceDisplay(product) }}</p>
+                  </div>
+                </button>
+              }
+            </div>
+
+            <div class="admin-editor-card">
+              <div class="admin-card-header">
+                <div>
+                  <p class="section-kicker">Product editor</p>
+                  <h3>Edit selected product</h3>
+                </div>
+              </div>
+
+              @if (adminSelectedProduct()) {
+                <form class="admin-editor-form" (ngSubmit)="saveAdminProduct()">
+                  <label>
+                    <span>Product name</span>
+                    <input [(ngModel)]="productEditor.name" name="editorName" />
+                  </label>
+
+                  <label>
+                    <span>Category</span>
+                    <input [(ngModel)]="productEditor.category" name="editorCategory" />
+                  </label>
+
+                  <label>
+                    <span>Price</span>
+                    <input
+                      [(ngModel)]="productEditor.price"
+                      name="editorPrice"
+                      placeholder="Example: 250 per kg"
+                    />
+                  </label>
+
+                  <label>
+                    <span>Image path</span>
+                    <input [(ngModel)]="productEditor.image" name="editorImage" />
+                  </label>
+
+                  <label class="full">
+                    <span>Headline</span>
+                    <input [(ngModel)]="productEditor.headline" name="editorHeadline" />
+                  </label>
+
+                  <label class="full">
+                    <span>Description</span>
+                    <textarea
+                      [(ngModel)]="productEditor.description"
+                      name="editorDescription"
+                      rows="4"
+                    ></textarea>
+                  </label>
+
+                  <label class="full">
+                    <span>Applications</span>
+                    <input [(ngModel)]="productEditor.applications" name="editorApplications" />
+                  </label>
+
+                  <label>
+                    <span>Finish</span>
+                    <input [(ngModel)]="productEditor.finish" name="editorFinish" />
+                  </label>
+
+                  <label>
+                    <span>Lead time</span>
+                    <input [(ngModel)]="productEditor.leadTime" name="editorLeadTime" />
+                  </label>
+
+                  <label class="full">
+                    <span>MOQ</span>
+                    <input [(ngModel)]="productEditor.minOrder" name="editorMinOrder" />
+                  </label>
+
+                  <div class="form-actions">
+                    <button type="submit" class="button primary">Save Product</button>
+                    <button
+                      type="button"
+                      class="button secondary danger-outline"
+                      (click)="deleteProduct(productEditor.id!)"
+                    >
+                      Delete Product
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <div class="empty-detail">
+                  <h3>No product selected</h3>
+                  <p>Select a product from the list to edit it.</p>
+                </div>
+              }
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="admin-card admin-create-card">
+        <div class="admin-card-header">
+          <div>
+            <p class="section-kicker">Add new product</p>
+            <h3>Create a fresh product entry for the catalog</h3>
+          </div>
+        </div>
+
+        <form class="manager-form admin-create-form" (ngSubmit)="addProduct()">
+          <label>
+            <span>Product name</span>
+            <input [(ngModel)]="newProduct.name" name="name" placeholder="Example: Twist Dyed Yarn" />
+          </label>
+
+          <label>
+            <span>Category</span>
+            <input [(ngModel)]="newProduct.category" name="category" placeholder="Example: Fancy Yarn" />
+          </label>
+
+          <label>
+            <span>Price</span>
+            <input [(ngModel)]="newProduct.price" name="price" placeholder="Example: 250 per kg" />
+          </label>
+
+          <label>
+            <span>Image path or URL</span>
+            <input
+              [(ngModel)]="newProduct.image"
+              name="image"
+              placeholder="assets/products/your-image.webp"
+            />
+          </label>
+
+          <label class="full">
+            <span>Headline</span>
+            <input
+              [(ngModel)]="newProduct.headline"
+              name="headline"
+              placeholder="Short one-line product highlight"
+            />
+          </label>
+
+          <label class="full">
+            <span>Description</span>
+            <textarea
+              [(ngModel)]="newProduct.description"
+              name="description"
+              rows="4"
+              placeholder="Write the product information you want to show on click."
+            ></textarea>
+          </label>
+
+          <label class="full">
+            <span>Applications</span>
+            <input
+              [(ngModel)]="newProduct.applications"
+              name="applications"
+              placeholder="Comma separated values, for example weaving, furnishing, rugs"
+            />
+          </label>
+
+          <label>
+            <span>Finish</span>
+            <input [(ngModel)]="newProduct.finish" name="finish" placeholder="Dyed, White, Bulk, Custom" />
+          </label>
+
+          <label>
+            <span>Lead time</span>
+            <input [(ngModel)]="newProduct.leadTime" name="leadTime" placeholder="7 days or Inquiry based" />
+          </label>
+
+          <label class="full">
+            <span>MOQ</span>
+            <input [(ngModel)]="newProduct.minOrder" name="minOrder" placeholder="Flexible or as per requirement" />
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="button primary">Add Product</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+}
+
+@if (contactProduct(); as product) {
+  <div class="contact-sheet-backdrop" (click)="closeContactOptions()">
+    <div class="contact-sheet" (click)="$event.stopPropagation()">
+      <button type="button" class="contact-sheet-close" (click)="closeContactOptions()">Close</button>
+
+      <p class="section-kicker">Contact for price</p>
+      <h2>{{ product.name }}</h2>
+      <p class="contact-sheet-copy">
+        Choose your preferred way to connect and get pricing details directly from M.S. Enterprises.
+      </p>
+
+      <div class="contact-sheet-actions">
+        <a class="contact-action whatsapp" [href]="whatsappLink(product)" target="_blank" rel="noopener">
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M12 2.04A9.96 9.96 0 0 0 3.4 16.9L2 22l5.24-1.37A10 10 0 1 0 12 2.04Zm0 18.15c-1.54 0-3.04-.41-4.36-1.2l-.31-.18-3.11.81.83-3.03-.2-.32a8.16 8.16 0 1 1 7.15 3.92Zm4.48-6.11c-.25-.13-1.46-.72-1.69-.8-.22-.09-.39-.13-.56.12-.16.25-.64.8-.78.96-.14.17-.28.19-.53.07-.25-.13-1.05-.38-2-.21-.74-.33-1.37-.74-1.92-1.28-.14-.25-.01-.38.11-.51.11-.11.25-.28.37-.42.13-.14.16-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.35-.77-1.84-.2-.49-.4-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.22.25-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.16 1.71 2.62 4.14 3.68.58.25 1.03.4 1.38.5.58.18 1.1.15 1.51.09.46-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.15-1.18-.05-.11-.22-.18-.47-.31Z"
+              />
+            </svg>
+          </span>
+          <span>
+            <strong>WhatsApp</strong>
+            <small>{{ displayPhone }}</small>
+          </span>
+        </a>
+
+        <a class="contact-action call" [href]="callLink()">
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.11.37 2.31.57 3.57.57.56 0 1 .45 1 1V20c0 .55-.44 1-1 1C10.85 21 3 13.15 3 3c0-.55.45-1 1-1H7.5c.55 0 1 .44 1 1 0 1.26.2 2.46.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2Z"
+              />
+            </svg>
+          </span>
+          <span>
+            <strong>Call Now</strong>
+            <small>{{ displayPhone }}</small>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+}
