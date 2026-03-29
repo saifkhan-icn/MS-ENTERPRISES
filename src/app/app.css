@@ -728,6 +728,7 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   gap: 1rem;
+  align-items: stretch;
 }
 
 .product-card {
@@ -735,6 +736,7 @@ section {
   grid-template-rows: auto 1fr;
   gap: 0.95rem;
   padding: 0.95rem;
+  height: 100%;
   cursor: pointer;
   transition:
     transform 180ms ease,
@@ -754,7 +756,20 @@ section {
   aspect-ratio: 16 / 11;
 }
 
-.product-content,
+.product-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  height: 100%;
+}
+
+.product-summary {
+  display: grid;
+  grid-template-rows: calc(2 * 1.25em) 1.75rem calc(4 * 1.4em);
+  gap: 0.8rem;
+  align-content: start;
+}
+
 .detail-copy,
 .spotlight-copy {
   display: flex;
@@ -773,6 +788,7 @@ section {
   grid-template-columns: minmax(0, max-content);
   justify-content: start;
   align-items: center;
+  min-height: 2rem;
 }
 
 .product-header span,
@@ -793,21 +809,33 @@ section {
 }
 
 .product-card h3 {
-  min-height: 3.5rem;
+  line-height: 1.25;
+  block-size: calc(2 * 1.25em);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .product-price {
-  min-height: 1.5rem;
+  min-height: 1.75rem;
+  block-size: 1.75rem;
   display: flex;
   align-items: center;
 }
 
 .product-headline {
-  min-height: 4.9rem;
+  line-height: 1.4;
+  block-size: calc(4 * 1.4em);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
 .product-metrics {
-  margin-top: auto;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
 }
 
 .product-metrics,
@@ -818,23 +846,32 @@ section {
 .product-metrics div,
 .detail-metrics div {
   display: grid;
+  grid-template-rows: auto 1fr;
   gap: 0.35rem;
   padding: 0.85rem;
   border-radius: 18px;
   background: rgba(52, 65, 67, 0.05);
   min-width: 0;
+  height: 100%;
 }
 
 .product-metrics span,
 .detail-metrics span {
+  display: block;
   color: var(--ink-600);
   font-size: 0.82rem;
+  line-height: 1.2;
 }
 
 .product-metrics strong,
 .detail-metrics strong {
+  display: -webkit-box;
   font-size: 0.95rem;
+  line-height: 1.3;
   overflow-wrap: anywhere;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .button-link {
@@ -842,6 +879,10 @@ section {
   background: transparent;
   color: var(--brand-700);
   font-weight: 700;
+}
+
+.product-actions {
+  margin-top: auto;
 }
 
 .detail-panel {
@@ -1299,8 +1340,7 @@ section {
   .topbar-actions,
   .admin-header-actions,
   .hero-actions,
-  .detail-actions,
-  .form-actions {
+  .detail-actions {
     width: 100%;
   }
 
@@ -1308,15 +1348,19 @@ section {
   .topbar-actions .button,
   .admin-header-actions .button,
   .hero-actions .button,
-  .detail-actions .button,
-  .form-actions .button {
+  .detail-actions .button {
     flex: 1 1 100%;
     text-align: center;
   }
 
   .form-actions {
-    flex-direction: column;
-    align-items: stretch;
+    width: auto;
+    justify-content: flex-start;
+  }
+
+  .form-actions .button {
+    flex: 0 1 auto;
+    min-width: 0;
   }
 
   .access-title,
@@ -1328,11 +1372,6 @@ section {
   .product-metrics,
   .detail-metrics {
     grid-template-columns: 1fr;
-  }
-
-  .product-card h3,
-  .product-headline {
-    min-height: 0;
   }
 
   .admin-user-item {

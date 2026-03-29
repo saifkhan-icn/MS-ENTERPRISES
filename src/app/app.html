@@ -262,19 +262,21 @@
                     <span>{{ product.category }}</span>
                   </div>
 
-                  <h3>{{ product.name }}</h3>
-                  @if (isContactPrice(product)) {
-                    <button
-                      type="button"
-                      class="price-trigger product-price"
-                      (click)="openContactOptions(product, $event)"
-                    >
-                      {{ priceDisplay(product) }}
-                    </button>
-                  } @else {
-                    <p class="product-price">{{ priceDisplay(product) }}</p>
-                  }
-                  <p class="product-headline">{{ product.headline }}</p>
+                  <div class="product-summary">
+                    <h3>{{ product.name }}</h3>
+                    @if (isContactPrice(product)) {
+                      <button
+                        type="button"
+                        class="price-trigger product-price"
+                        (click)="openContactOptions(product, $event)"
+                      >
+                        {{ priceDisplay(product) }}
+                      </button>
+                    } @else {
+                      <p class="product-price">{{ priceDisplay(product) }}</p>
+                    }
+                    <p class="product-headline">{{ product.headline }}</p>
+                  </div>
 
                   <div class="product-metrics">
                     @for (metric of product.metrics; track metric.label) {
