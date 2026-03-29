@@ -726,7 +726,7 @@ section {
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   gap: 1rem;
 }
 
@@ -1189,6 +1189,11 @@ section {
     grid-template-columns: 1fr;
   }
 
+  .hero,
+  .admin-hero {
+    min-height: auto;
+  }
+
   .detail-panel {
     position: static;
   }
@@ -1214,7 +1219,7 @@ section {
   .topnav,
   .topbar-actions,
   .admin-header-actions {
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 
   .section-heading,
@@ -1243,6 +1248,28 @@ section {
     padding: 0.75rem;
   }
 
+  .shell,
+  .admin-shell {
+    width: calc(100% - 0.75rem);
+    padding-top: 0.75rem;
+  }
+
+  .hero,
+  .catalog-section,
+  .about-section,
+  .contact-section,
+  .admin-hero {
+    padding: 1rem;
+    border-radius: 24px;
+  }
+
+  .topbar,
+  .admin-header {
+    gap: 0.75rem;
+    padding: 0.85rem;
+    border-radius: 20px;
+  }
+
   .access-highlights,
   .operations-grid,
   .contact-grid {
@@ -1263,10 +1290,27 @@ section {
     align-items: flex-start;
   }
 
+  .access-brand {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .topnav,
+  .topbar-actions,
+  .admin-header-actions,
+  .hero-actions,
+  .detail-actions,
+  .form-actions {
+    width: 100%;
+  }
+
   .topnav a,
   .topbar-actions .button,
-  .admin-header-actions .button {
-    flex: 1 1 calc(50% - 0.5rem);
+  .admin-header-actions .button,
+  .hero-actions .button,
+  .detail-actions .button,
+  .form-actions .button {
+    flex: 1 1 100%;
     text-align: center;
   }
 
@@ -1280,8 +1324,27 @@ section {
     max-width: none;
   }
 
+  .product-grid,
+  .product-metrics,
+  .detail-metrics {
+    grid-template-columns: 1fr;
+  }
+
   .product-card h3,
   .product-headline {
     min-height: 0;
+  }
+
+  .admin-user-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-product-list {
+    max-height: none;
+  }
+
+  .admin-product-item {
+    grid-template-columns: 72px 1fr;
   }
 }
